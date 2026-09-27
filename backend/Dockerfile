@@ -1,17 +1,24 @@
-# Etapa 1: Dependencias
-FROM    node:20-alpine AS builder
-WORKDIR /reservas-api
-COPY    package.json package-lock.json .
-RUN     npm ci --omit=dev
+# Etapa 1: Instalación de dependencias de producción
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
+# Etapa 2: Imagen final de ejecución
+FROM node:20-alpine
+WORKDIR /app
 
-# Etapa 2
-FROM    node:20-alpine
-WORKDIR /reservas-api
-COPY    --from=builder /reservas-api/node_modules ./node_modules
-COPY    db.js server.js .
-ENV     NODE_ENV=production
-ARG     APP_VERSION=v1
-ENV     APP_VERSION=${APP_VERSION}
-EXPOSE  3000
-CMD     ["node", "db.js", "server.js"]
+# Definición de variables de entorno y argumentos
+ARG APP_VERSION=v1
+ENV APP_VERSION=${APP_VERSION}
+ENV NODE_ENV=production
+
+# Copia de archivos asignando la propiedad al usuario no privilegiado 'node'
+COPY --chown=node:node --from=deps /app/node_modules ./node_modules
+COPY --chown=node:node . .
+
+# Cambio al usuario no privilegiado
+USER node
+
+EXPOSE 3000
+CMD ["node", "server.js"]
