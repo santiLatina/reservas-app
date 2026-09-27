@@ -59,3 +59,6 @@ src/components/       grilla de reservas, selector de fecha y modales
 nginx/templates/      configuración de nginx para servir dist/
 vite.config.js        puerto de desarrollo y proxy hacia la API
 ```
+
+## Notas TP2 - 6
+Nginx al arrancar busca sustituir variables en sus archivos de plantilla. Si no se pone el filtro "NGINX_ENVSUBST_FILTER=API_",  Nginx intentará reemplazar variables internas como $uri o $host dejándolas vacías y rompiendo la configuración
