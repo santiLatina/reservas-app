@@ -1,0 +1,6 @@
+apiVersion: v2
+name: reservas-app
+description: Chart de Helm para desplegar reservas-app (Variante B) en Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reservas-db
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reservas-db
+  template:
+    metadata:
+      labels:
+        app: reservas-db
+    spec:
+      containers:
+        - name: mysql
+          image: {{ .Values.db.image }}
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - secretRef:
+                name: reservas-db-secret
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: reservas-api-config
+                  key: DB_NAME
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+              subPath: mysql
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: reservas-db-pvc

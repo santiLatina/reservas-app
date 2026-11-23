@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reservas-frontend
+  namespace: reservas-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: reservas-frontend
+  template:
+    metadata:
+      labels:
+        app: reservas-frontend
+    spec:
+      containers:
+        - name: reservas-frontend
+          image: slsantiago/reservas-frontend:v1
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: reservas-frontend-config
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10

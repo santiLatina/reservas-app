@@ -1,0 +1,40 @@
+api:
+  image:
+    repository: slsantiago/reservas-api
+    tag: v1
+  replicas: 2
+  port: 3000
+  seedDemo: "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+frontend:
+  image:
+    repository: slsantiago/reservas-frontend
+    tag: v1
+  replicas: 2
+  port: 8080
+  nodePort: 30301
+
+# Credenciales de laboratorio (en producción deben gestionarse con un gestor externo de secretos; ver ARQUITECTURA.md)
+db:
+  image: mysql:8.4
+  name: reservasdb
+  user: reservas_user
+  password: reservas_pass
+  rootPassword: reservas_root_pass
+  storage: 1Gi
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 50
+
+ingress:
+  className: nginx
+  host: reservas.local
